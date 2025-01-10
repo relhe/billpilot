@@ -161,6 +161,8 @@ cython_debug/
 .pypirc
 
 /venv/
-/.venv/
+/.venv/ 
 /env/
 /.env/
+/coverage
+**/.env
