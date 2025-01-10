@@ -1,6 +1,6 @@
 import phonenumbers
 from pycountry import countries, currencies
-from pydantic import BaseModel, EmailStr, Field, field_validator, ConfigDict
+from pydantic import BaseModel, EmailStr, Field, field_validator, model_validator
 from typing import Optional, Literal
 from datetime import datetime, date
 
@@ -21,13 +21,18 @@ class Payment(BaseModel):
     payee_email: EmailStr
     currency: str
     discount_percent: Optional[float] = Field(default=0.00, ge=0.00, le=100.00)
-    tax_percent: Optional[float] = Field(default=0.00, ge=00.00, le=100.00)
+    tax_percent: Optional[float] = Field(default=0.00, ge=0.00, le=100.00)
     due_amount: float
-    total_due: float = 0.0
 
-    # dynamic calculation of total_due field based on due_amount,
-    # discount_percent, and tax_percent
-    model_config = ConfigDict(validate_assignment=True)
+    @property
+    def total_due(self) -> float:
+        """
+        Dynamically calculates `total_due` based on `due_amount`,
+        `discount_percent`, and `tax_percent`.
+        """
+        discount = self.due_amount * (self.discount_percent / 100)
+        tax = self.due_amount * (self.tax_percent / 100)
+        return round(self.due_amount - discount + tax, 2)
 
     @field_validator("payee_country")
     @classmethod
@@ -42,7 +47,7 @@ class Payment(BaseModel):
         str: The validated country code.
 
         Raises:
-        ValueError: If the provided country code is not valid according\
+        ValueError: If the provided country code is not valid according
             to ISO 3166-1 alpha-2 standard.
         """
         valid_country_codes = {country.alpha_2 for country in countries}
@@ -65,7 +70,7 @@ class Payment(BaseModel):
         str: The validated phone number in E.164 format.
 
         Raises:
-        ValueError: If the provided phone number is not valid according\
+        ValueError: If the provided phone number is not valid according
             to E.164 or if it cannot be parsed.
         """
         try:
@@ -92,12 +97,12 @@ class Payment(BaseModel):
         str: The validated currency code.
 
         Raises:
-        ValueError: If the provided currency code is not valid according\
+        ValueError: If the provided currency code is not valid according
             to ISO 4217 standard.
 
-        This method checks if the provided currency code\
+        This method checks if the provided currency code
             is a valid ISO 4217 currency code.
-        If the code is not valid, it raises a ValueError with\
+        If the code is not valid, it raises a ValueError with
             an appropriate error message.
         Otherwise, it returns the validated currency code.
         """
@@ -110,18 +115,15 @@ class Payment(BaseModel):
         "discount_percent", "tax_percent", "due_amount", mode="before")
     @classmethod
     def round_two_decimal_points(cls, value):
+        """
+        Ensures the given value is rounded to two decimal points.
+
+        Parameters:
+        value (float): The value to be rounded.
+
+        Returns:
+        float: The rounded value.
+        """
         if value is not None:
             return round(value, 2)
         return value
-
-    @field_validator("total_due", mode="after")
-    @classmethod
-    def calculate_total_due(cls, values):
-        due_amount = values.get("due_amount", 0.0)
-        discount_percent = values.get("discount_percent", 0.0)
-        tax_percent = values.get("tax_percent", 0.0)
-
-        discount = due_amount * (discount_percent / 100)
-        tax = due_amount * (tax_percent / 100)
-
-        return round(due_amount - discount + tax, 2)
