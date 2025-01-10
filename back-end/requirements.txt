@@ -7,3 +7,5 @@ pymongo[srv]
 python-dotenv
 pandas
 python-multipart
+pycountry
+phonenumbers
