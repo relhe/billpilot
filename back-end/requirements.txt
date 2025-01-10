@@ -1,0 +1,9 @@
+pydantic
+pydantic[email]
+fastapi
+uvicorn
+typing
+pymongo[srv]
+python-dotenv
+pandas
+python-multipart
