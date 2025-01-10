@@ -1,0 +1,3 @@
+DATABASE_NAME = "billpilot"
+PAYMENTS_COLLECTION = "payments"
+EVIDENCE_COLLECTION = "evidence"
