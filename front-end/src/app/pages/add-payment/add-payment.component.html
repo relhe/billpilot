@@ -1,0 +1,254 @@
+<div class="add-payment-container">
+    <h2>Add Payment</h2>
+    <form [formGroup]="paymentForm" (ngSubmit)="onSubmit()">
+        <div class="form-group">
+            <label for="payee_first_name">First Name</label>
+            <input
+                id="payee_first_name"
+                type="text"
+                formControlName="payee_first_name"
+                name="payee_first_name"
+                title="First Name"
+                placeholder="Enter First Name"
+                required
+            />
+        </div>
+
+        <div class="form-group">
+            <label for="payee_last_name">Last Name</label>
+            <input
+                id="payee_last_name"
+                type="text"
+                formControlName="payee_last_name"
+                name="payee_last_name"
+                title="Last Name"
+                placeholder="Enter Last Name"
+                required
+            />
+        </div>
+
+        <div class="form-group">
+            <label for="payee_payment_status">Payment Status</label>
+            <input
+                id="payee_payment_status"
+                type="text"
+                formControlName="payee_payment_status"
+                name="payee_payment_status"
+                title="Payment Status"
+                placeholder="Pending (Fixed)"
+            />
+        </div>
+
+        <!-- <div class="form-group">
+            <label for="payee_added_date_utc">Added Date (UTC)</label>
+            <input
+                id="payee_added_date_utc"
+                type="text"
+                formControlName="payee_added_date_utc"
+                name="payee_added_date_utc"
+                title="Added Date (UTC)"
+                placeholder="Auto-filled"
+            />
+        </div> -->
+
+        <div class="form-group">
+            <label for="payee_due_date">Due Date (YYYY-MM-DD)</label>
+            <input
+                id="payee_due_date"
+                type="date"
+                formControlName="payee_due_date"
+                name="payee_due_date"
+                title="Due Date"
+                placeholder="Enter Due Date"
+                required
+            />
+        </div>
+
+        <div class="form-group">
+            <label for="payee_address_line_1">Address Line 1</label>
+            <input
+                id="payee_address_line_1"
+                type="text"
+                formControlName="payee_address_line_1"
+                name="payee_address_line_1"
+                title="Address Line 1"
+                placeholder="Enter Address Line 1"
+                required
+            />
+        </div>
+
+        <div class="form-group">
+            <label for="payee_address_line_2">Address Line 2</label>
+            <input
+                id="payee_address_line_2"
+                type="text"
+                formControlName="payee_address_line_2"
+                name="payee_address_line_2"
+                title="Address Line 2"
+                placeholder="Enter Address Line 2"
+            />
+        </div>
+
+        <!-- City Field with Auto-complete -->
+        <div class="form-group">
+            <label for="payee_city">City</label>
+            <input
+                id="payee_city"
+                type="text"
+                formControlName="payee_city"
+                placeholder="Enter City"
+                list="city-options"
+            />
+            <datalist id="city-options">
+                <option *ngFor="let city of cities" [value]="city"></option>
+            </datalist>
+        </div>
+
+        <!-- Country Field with Auto-complete -->
+        <div class="form-group">
+            <label for="payee_country">Country</label>
+            <input
+                id="payee_country"
+                type="text"
+                formControlName="payee_country"
+                placeholder="Enter Country"
+                list="country-options"
+                (input)="onCountryChange()"
+            />
+            <datalist id="country-options">
+                <option
+                    *ngFor="let country of countries"
+                    [value]="country"
+                ></option>
+            </datalist>
+        </div>
+
+        <div class="form-group">
+            <label for="payee_province_or_state">Province/State</label>
+            <input
+                id="payee_province_or_state"
+                type="text"
+                formControlName="payee_province_or_state"
+                name="payee_province_or_state"
+                title="Province/State"
+                placeholder="Enter Province/State"
+            />
+        </div>
+
+        <div class="form-group">
+            <label for="payee_postal_code">Postal Code</label>
+            <input
+                id="payee_postal_code"
+                type="text"
+                formControlName="payee_postal_code"
+                name="payee_postal_code"
+                title="Postal Code"
+                placeholder="Enter Postal Code"
+                required
+            />
+        </div>
+
+        <div class="form-group">
+            <label for="payee_phone_number">Phone Number (E.164)</label>
+            <input
+                id="payee_phone_number"
+                type="text"
+                formControlName="payee_phone_number"
+                name="payee_phone_number"
+                title="Phone Number"
+                placeholder="+1234567890"
+                required
+            />
+        </div>
+
+        <div class="form-group">
+            <label for="payee_email">Email</label>
+            <input
+                id="payee_email"
+                type="email"
+                formControlName="payee_email"
+                name="payee_email"
+                title="Email"
+                placeholder="Enter Email Address"
+                required
+            />
+        </div>
+
+        <div class="form-group">
+            <label for="currency">Currency (ISO 4217)</label>
+            <input
+                id="currency"
+                type="text"
+                formControlName="currency"
+                name="currency"
+                title="Currency"
+                placeholder="Enter Currency Code"
+                required
+            />
+            <datalist id="currency-options">
+                <option
+                    *ngFor="let currency of currencies"
+                    [value]="currency"
+                ></option>
+            </datalist>
+        </div>
+
+        <div class="form-group">
+            <label for="discount_percent">Discount (%)</label>
+            <input
+                id="discount_percent"
+                type="number"
+                formControlName="discount_percent"
+                name="discount_percent"
+                title="Discount Percentage"
+                placeholder="Enter Discount Percentage"
+                step="0.01"
+            />
+        </div>
+
+        <div class="form-group">
+            <label for="tax_percent">Tax (%)</label>
+            <input
+                id="tax_percent"
+                type="number"
+                formControlName="tax_percent"
+                name="tax_percent"
+                title="Tax Percentage"
+                placeholder="Enter Tax Percentage"
+                step="0.01"
+            />
+        </div>
+
+        <div class="form-group">
+            <label for="due_amount">Due Amount</label>
+            <input
+                id="due_amount"
+                type="number"
+                formControlName="due_amount"
+                name="due_amount"
+                title="Due Amount"
+                placeholder="Enter Due Amount"
+                step="0.01"
+                required
+            />
+        </div>
+
+        <div class="form-group">
+            <label for="total_due">Total Due</label>
+            <input
+                id="total_due"
+                type="number"
+                formControlName="total_due"
+                name="total_due"
+                title="Total Due"
+                placeholder="Auto-calculated"
+                [disabled]="true"
+                step="0.01"
+            />
+        </div>
+
+        <button type="submit" [disabled]="paymentForm.invalid" title="Submit">
+            Add Payment
+        </button>
+    </form>
+</div>
