@@ -1,11 +1,20 @@
-from fastapi import APIRouter, HTTPException
 from datetime import datetime, date
+from fastapi import APIRouter, HTTPException, File, UploadFile
+import uuid
+import gridfs
+from starlette.responses import StreamingResponse
+
 from app.models.payment_model import Payment
-from app.schemas.payment_schema import serialize_payments, serialize_payment
-from app.config.database import payments_collection
+from app.schemas.payment_schema import serialize_payments
+from app.config.database import db, payments_collection, evidence_collection
 from bson import ObjectId
 
+from app.constants.constants import ALLOWED_MIME_TYPES
+
+
 router = APIRouter()
+
+fs = gridfs.GridFS(db)
 
 
 @router.get("/")
@@ -25,6 +34,127 @@ async def create_payment(payment: Payment):
             payment_dict["payee_due_date"], datetime.min.time()
         )
 
-    # Insert the document into the database
-    result = payments_collection.insert_one(payment_dict)
-    return {"id": str(result.inserted_id)}
+    payment_dict["transaction_id"] = payment_dict.get(
+        "transaction_id") or str(uuid.uuid4())
+
+    try:
+        result = payments_collection.insert_one(payment_dict)
+        return {"id": str(result.inserted_id)}
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error: {e.details.get('errmsg')}"
+        )
+
+
+@router.put("/{id}")
+async def update_payment(id: str, payment: Payment):
+    # Convert the payment object to a dictionary
+    payment_dict = payment.dict()
+
+    # Ensure payee_due_date is converted to datetime
+    if isinstance(payment_dict["payee_due_date"], date):
+        payment_dict["payee_due_date"] = datetime.combine(
+            payment_dict["payee_due_date"], datetime.min.time()
+        )
+
+    # Ensure transaction_id is unique
+    payment_dict["transaction_id"] = payment_dict.get(
+        "transaction_id") or str(uuid.uuid4())
+
+    try:
+        # Update the document in the database
+        result = payments_collection.update_one(
+            {"_id": ObjectId(id)}, {"$set": payment_dict})
+        return {"id": str(result.upserted_id)}
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error: {e.details.get('errmsg')}"
+        )
+
+
+@router.delete("/{id}")
+async def delete_payment(id: str):
+    result = payments_collection.delete_one({"_id": ObjectId(id)})
+    if result.deleted_count == 1:
+        return {"message": "Success"}
+    else:
+        raise HTTPException(status_code=404, detail="Error")
+
+
+@router.post("/upload/{id}")
+async def upload_evidence(id: str, file: UploadFile = File(...)):
+    if file.content_type not in ALLOWED_MIME_TYPES:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Error: Unsupported file type: {file.content_type}.\
+                Allowed types are pdf, png, or jpg.",
+        )
+
+    if not ObjectId.is_valid(id):
+        raise HTTPException(
+            status_code=400, detail="Error :Invalid ID format.")
+
+    try:
+        evidence_document = {
+            "payment_id": ObjectId(id),
+            "file_content": await file.read(),
+            "filename": file.filename,
+            "content_type": file.content_type,
+        }
+        evidence_collection.insert_one(
+            evidence_document)
+
+        # Update the payment status to completed
+        update_result = payments_collection.update_one(
+            {"_id": ObjectId(id)},
+            {
+                "$set": {
+                    "payee_payment_status": "completed",
+                }
+            },
+        )
+
+        if update_result.matched_count == 0:
+            raise HTTPException(
+                status_code=404, detail="Error : Payment not found.")
+
+        return {
+            "message": "File uploaded, payee payment status is completed.",
+        }
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, detail=f"Error: {str(e)}")
+
+
+@router.get("/download/{evidence_id}")
+async def download_evidence(evidence_id: str):
+    if not ObjectId.is_valid(evidence_id):
+        raise HTTPException(
+            status_code=400, detail="Error : Invalid ID format.")
+
+    try:
+        evidence = evidence_collection.find_one(
+            {"payment_id": ObjectId(evidence_id)})
+
+        if not evidence:
+            raise HTTPException(
+                status_code=404, detail="Error: File not found.")
+
+        file_content = evidence["file_content"]
+        filename = evidence["filename"]
+        content_type = evidence["content_type"]
+
+        return StreamingResponse(
+            iter([file_content]),
+            media_type=content_type,
+            headers={
+                "Content-Disposition": f"attachment; filename={filename}"
+            },
+        )
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, detail=f"Error: {str(e)}")
