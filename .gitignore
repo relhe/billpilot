@@ -1,3 +1,6 @@
-
 .codegpt
 /coverage
+**/venv/
+**/node_modules/
+**/dist/
+**/__pycache__/
