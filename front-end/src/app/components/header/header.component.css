@@ -1,0 +1,54 @@
+.header-container {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    background-color: #333;
+    color: #fff;
+    padding: 10px 20px;
+}
+
+.menu {
+    flex: 1;
+}
+
+.menu-button {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.app-name {
+    flex: 2;
+    text-align: center;
+}
+
+.app-name h1 {
+    margin: 0;
+    font-size: 24px;
+}
+
+.navigation {
+    flex: 2;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.navigation button {
+    background: none;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 5px 10px;
+}
+
+.navigation button:hover {
+    text-decoration: underline;
+}
+
+.search-icon {
+    font-size: 20px;
+}
