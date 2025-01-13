@@ -39,18 +39,6 @@
             />
         </div>
 
-        <!-- <div class="form-group">
-            <label for="payee_added_date_utc">Added Date (UTC)</label>
-            <input
-                id="payee_added_date_utc"
-                type="text"
-                formControlName="payee_added_date_utc"
-                name="payee_added_date_utc"
-                title="Added Date (UTC)"
-                placeholder="Auto-filled"
-            />
-        </div> -->
-
         <div class="form-group">
             <label for="payee_due_date">Due Date (YYYY-MM-DD)</label>
             <input
@@ -89,21 +77,6 @@
             />
         </div>
 
-        <!-- City Field with Auto-complete -->
-        <div class="form-group">
-            <label for="payee_city">City</label>
-            <input
-                id="payee_city"
-                type="text"
-                formControlName="payee_city"
-                placeholder="Enter City"
-                list="city-options"
-            />
-            <datalist id="city-options">
-                <option *ngFor="let city of cities" [value]="city"></option>
-            </datalist>
-        </div>
-
         <!-- Country Field with Auto-complete -->
         <div class="form-group">
             <label for="payee_country">Country</label>
@@ -114,12 +87,29 @@
                 placeholder="Enter Country"
                 list="country-options"
                 (input)="onCountryChange()"
+                required
             />
             <datalist id="country-options">
                 <option
                     *ngFor="let country of countries"
                     [value]="country"
                 ></option>
+            </datalist>
+        </div>
+
+        <!-- City Field with Auto-complete -->
+        <div class="form-group">
+            <label for="payee_city">City</label>
+            <input
+                id="payee_city"
+                type="text"
+                formControlName="payee_city"
+                placeholder="Enter City"
+                list="city-options"
+                required
+            />
+            <datalist id="city-options">
+                <option *ngFor="let city of cities" [value]="city"></option>
             </datalist>
         </div>
 
@@ -149,7 +139,9 @@
         </div>
 
         <div class="form-group">
-            <label for="payee_phone_number">Phone Number (E.164)</label>
+            <label for="payee_phone_number"
+                >Phone Number (Ex. +1234567890)</label
+            >
             <input
                 id="payee_phone_number"
                 type="text"
@@ -162,7 +154,7 @@
         </div>
 
         <div class="form-group">
-            <label for="payee_email">Email</label>
+            <label for="payee_email">Email (Ex. my_email&#64;gmail.com)</label>
             <input
                 id="payee_email"
                 type="email"
@@ -175,19 +167,19 @@
         </div>
 
         <div class="form-group">
-            <label for="currency">Currency (ISO 4217)</label>
+            <label for="currency">Currency (Ex. USD, CAD, EUR)</label>
             <input
                 id="currency"
                 type="text"
                 formControlName="currency"
-                name="currency"
-                title="Currency"
                 placeholder="Enter Currency Code"
+                list="currency-options"
+                (input)="onCurrencyInputChange($event)"
                 required
             />
-            <datalist id="currency-options">
+            <datalist id="currency-options" class="fixed-dropdown">
                 <option
-                    *ngFor="let currency of currencies"
+                    *ngFor="let currency of filteredCurrencies"
                     [value]="currency"
                 ></option>
             </datalist>
@@ -230,20 +222,6 @@
                 placeholder="Enter Due Amount"
                 step="0.01"
                 required
-            />
-        </div>
-
-        <div class="form-group">
-            <label for="total_due">Total Due</label>
-            <input
-                id="total_due"
-                type="number"
-                formControlName="total_due"
-                name="total_due"
-                title="Total Due"
-                placeholder="Auto-calculated"
-                [disabled]="true"
-                step="0.01"
             />
         </div>
 

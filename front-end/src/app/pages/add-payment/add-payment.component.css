@@ -28,10 +28,10 @@ h2 {
     border: 1px solid #ccc;
     border-radius: 4px;
 }
-datalist {
+/* datalist {
     max-height: 150px;
     overflow-y: auto;
-}
+} */
 
 input {
     width: 100%;
@@ -55,4 +55,14 @@ button {
 button:disabled {
     background-color: #ccc;
     cursor: not-allowed;
+}
+.fixed-dropdown {
+    position: absolute;
+    z-index: 1;
+    height: 5px;
+    overflow-y: auto;
+    width: 100%;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
 }
