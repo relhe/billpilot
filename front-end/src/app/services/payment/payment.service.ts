@@ -11,14 +11,6 @@ export class PaymentService {
 
     constructor(private readonly http: HttpClient) {}
 
-    getPayments(filters: any, page: number, size: number): Observable<any> {
-        return this.http.get(
-            `${this.apiUrl}?filters=${JSON.stringify(
-                filters
-            )}&page=${page}&size=${size}`
-        )
-    }
-
     getPaymentById(id: string): Observable<any> {
         return this.http.get(`${this.apiUrl}/${id}`)
     }
@@ -33,5 +25,22 @@ export class PaymentService {
 
     deletePayment(id: string): Observable<any> {
         return this.http.delete(`${this.apiUrl}/${id}`)
+    }
+
+    getAllPayments(): Observable<any> {
+        return this.http.get(this.apiUrl)
+    }
+
+    getFilteredPayments(filters: any): Observable<any> {
+        return this.http.post(`${this.apiUrl}/filter`, filters)
+    }
+
+    uploadEvidence(paymentId: string, formData: FormData): Observable<any> {
+        return this.http.post(`${this.apiUrl}/upload/${paymentId}`, formData)
+    }
+    downloadEvidence(paymentId: string): Observable<any> {
+        return this.http.get(`${this.apiUrl}/download/${paymentId}`, {
+            responseType: 'blob'
+        })
     }
 }
