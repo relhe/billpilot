@@ -1,0 +1,92 @@
+<div class="main-screen-container">
+    <h2>Payment Overview</h2>
+
+    <!-- Filter Form -->
+    <form [formGroup]="filterForm" (ngSubmit)="applyFilters()">
+        <div class="form-group">
+            <label for="status">Status</label>
+            <select id="status" formControlName="status">
+                <option value="">All</option>
+                <option value="pending">Pending</option>
+                <option value="due_now">Due Now</option>
+                <option value="overdue">Overdue</option>
+                <option value="completed">Completed</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="search">Search</label>
+            <input
+                id="search"
+                type="text"
+                formControlName="search"
+                placeholder="Search by name or details"
+            />
+        </div>
+        <button type="submit">Apply Filters</button>
+    </form>
+
+    <!-- Payment List -->
+    <table class="payment-table">
+        <thead>
+            <tr>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Status</th>
+                <th>Total Due</th>
+                <th>Details</th>
+                <th>Evidence</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let payment of paginatedPaymentList">
+                <td>{{ payment.payee_first_name }}</td>
+                <td>{{ payment.payee_last_name }}</td>
+                <td>{{ payment.payee_payment_status }}</td>
+                <td>{{ payment.currency }} {{ payment.total_due }}</td>
+                <td>
+                    <div>
+                        <app-visibility
+                            (click)="callToggleVisibility(payment.id)"
+                            (keydown)="callToggleVisibility(payment.id)"
+                            id="{{ payment.id }}"
+                        ></app-visibility>
+                    </div>
+                </td>
+                <td>
+                    <div *ngIf="payment.payee_payment_status === 'completed'">
+                        <button
+                            class="btn btn-success"
+                            (click)="downloadEvidence(payment.id)"
+                        >
+                            Download
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <p class="pagination">
+        <span
+            class="pagination-button"
+            [class.disabled]="currentPage === 1"
+            (click)="changePage(currentPage - 1)"
+        >
+            Previous
+        </span>
+        <span
+            *ngFor="let page of visiblePages"
+            class="pagination-button"
+            [class.active]="page === currentPage"
+            (click)="changePage(page)"
+        >
+            {{ page }}
+        </span>
+        <span
+            class="pagination-button"
+            [class.disabled]="currentPage === totalPages"
+            (click)="changePage(currentPage + 1)"
+        >
+            Next
+        </span>
+    </p>
+</div>

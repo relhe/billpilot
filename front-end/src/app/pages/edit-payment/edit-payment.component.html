@@ -1,0 +1,127 @@
+<div class="edit-payment-container">
+    <h2>Edit Payment</h2>
+    <form [formGroup]="editPaymentForm" (ngSubmit)="onSubmit()">
+        <div class="form-group">
+            <label for="payee_first_name">First Name</label>
+            <input
+                id="payee_first_name"
+                type="text"
+                formControlName="payee_first_name"
+                placeholder="Enter First Name"
+            />
+        </div>
+
+        <div class="form-group">
+            <label for="payee_last_name">Last Name</label>
+            <input
+                id="payee_last_name"
+                type="text"
+                formControlName="payee_last_name"
+                placeholder="Enter Last Name"
+            />
+        </div>
+
+        <div class="form-group">
+            <label for="payee_payment_status">Payment Status</label>
+            <select
+                id="payee_payment_status"
+                formControlName="payee_payment_status"
+            >
+                <option value="pending">Pending</option>
+                <option value="due_now">Due Now</option>
+                <option value="completed">Completed</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="payee_address_line_1">Address Line 1</label>
+            <input
+                id="payee_address_line_1"
+                type="text"
+                formControlName="payee_address_line_1"
+                placeholder="Enter Address Line 1"
+            />
+        </div>
+
+        <div class="form-group">
+            <label for="payee_address_line_2">Address Line 2</label>
+            <input
+                id="payee_address_line_2"
+                type="text"
+                formControlName="payee_address_line_2"
+                placeholder="Enter Address Line 2"
+            />
+        </div>
+
+        <div class="form-group">
+            <label for="payee_country">Country</label>
+            <input
+                id="payee_country"
+                type="text"
+                formControlName="payee_country"
+                placeholder="Enter Country"
+                list="country-options"
+                (input)="onCountryChange()"
+                required
+            />
+            <datalist id="country-options">
+                <option
+                    *ngFor="let country of countries"
+                    [value]="country"
+                ></option>
+            </datalist>
+        </div>
+
+        <div class="form-group">
+            <label for="payee_city">City</label>
+            <input
+                id="payee_city"
+                type="text"
+                formControlName="payee_city"
+                placeholder="Enter City"
+            />
+            <datalist id="city-options">
+                <option *ngFor="let city of cities" [value]="city"></option>
+            </datalist>
+        </div>
+
+        <div class="form-group">
+            <label for="currency">Currency</label>
+            <input
+                id="currency"
+                type="text"
+                formControlName="currency"
+                placeholder="Enter Currency"
+            />
+            <datalist id="currency-options">
+                <option
+                    *ngFor="let currency of currencies"
+                    [value]="currency"
+                ></option>
+            </datalist>
+        </div>
+
+        <div class="form-group">
+            <label for="due_amount">Due Amount</label>
+            <input
+                id="due_amount"
+                type="number"
+                formControlName="due_amount"
+                placeholder="Enter Due Amount"
+            />
+        </div>
+
+        <div
+            class="form-group"
+            *ngIf="
+                editPaymentForm.get('payee_payment_status')?.value ===
+                'completed'
+            "
+        >
+            <label for="evidence">Upload Evidence</label>
+            <input id="evidence" type="file" (change)="onFileUpload($event)" />
+        </div>
+
+        <button type="submit">Save Changes</button>
+    </form>
+</div>

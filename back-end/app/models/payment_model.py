@@ -1,15 +1,16 @@
 import phonenumbers
 from pycountry import countries, currencies
-from pydantic import BaseModel, EmailStr, Field, field_validator, model_validator
+from pydantic import BaseModel, EmailStr, Field, field_validator, model_validator, constr
 from typing import Optional, Literal
 from datetime import datetime, date
+import re
 
 
 class Payment(BaseModel):
     payee_first_name: str
     payee_last_name: str
     payee_payment_status: Literal["completed", "due_now", "overdue", "pending"]
-    payee_added_date_utc: datetime
+    payee_added_date_utc: str
     payee_due_date: date
     payee_address_line_1: str
     payee_address_line_2: Optional[str]
@@ -18,11 +19,21 @@ class Payment(BaseModel):
     payee_province_or_state: Optional[str]
     payee_postal_code: str
     payee_phone_number: str
-    payee_email: EmailStr
+    payee_email: str
     currency: str
     discount_percent: Optional[float] = Field(default=0.00, ge=0.00, le=100.00)
     tax_percent: Optional[float] = Field(default=0.00, ge=0.00, le=100.00)
     due_amount: float
+    total_due: float
+
+    @field_validator("payee_added_date_utc")
+    def validate_added_date_utc(cls, value: str) -> str:
+        pattern = r'^[A-Za-z]{3} \d{1,2}, \d{4}, \d{1,2}:\d{2} (AM|PM)$'
+        if not re.match(pattern, value):
+            raise ValueError(
+                "payee_added_date_utc\
+                    must be in the format 'Jan 12, 2025, 3:00 PM'")
+        return value
 
     @property
     def total_due(self) -> float:
@@ -84,32 +95,32 @@ class Payment(BaseModel):
         except phonenumbers.NumberParseException as e:
             raise ValueError(f"{value} is not a valid phone number: {e}")
 
-    @field_validator("currency")
-    @classmethod
-    def validate_currency(cls, value):
-        """
-        Validates the currency code using ISO 4217 standard.
+    # @field_validator("currency")
+    # @classmethod
+    # def validate_currency(cls, value):
+    #     """
+    #     Validates the currency code using ISO 4217 standard.
 
-        Parameters:
-        value (str): The currency code to be validated.
+    #     Parameters:
+    #     value (str): The currency code to be validated.
 
-        Returns:
-        str: The validated currency code.
+    #     Returns:
+    #     str: The validated currency code.
 
-        Raises:
-        ValueError: If the provided currency code is not valid according
-            to ISO 4217 standard.
+    #     Raises:
+    #     ValueError: If the provided currency code is not valid according
+    #         to ISO 4217 standard.
 
-        This method checks if the provided currency code
-            is a valid ISO 4217 currency code.
-        If the code is not valid, it raises a ValueError with
-            an appropriate error message.
-        Otherwise, it returns the validated currency code.
-        """
-        valid_currencies = {currency.alpha_3 for currency in currencies}
-        if value not in valid_currencies:
-            raise ValueError(f"{value} is not a valid ISO 4217 currency code")
-        return value
+    #     This method checks if the provided currency code
+    #         is a valid ISO 4217 currency code.
+    #     If the code is not valid, it raises a ValueError with
+    #         an appropriate error message.
+    #     Otherwise, it returns the validated currency code.
+    #     """
+    #     valid_currencies = {currency.alpha_3 for currency in currencies}
+    #     if value not in valid_currencies:
+    #         raise ValueError(f"{value} is not a valid ISO 4217 currency code")
+    #     return value
 
     @field_validator(
         "discount_percent", "tax_percent", "due_amount", mode="before")

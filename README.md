@@ -1,6 +1,6 @@
 # Billpilot Application
 
-This project is a **Full Stack Payment Management Application** that allows users to manage a list of payments via user interface with CRUD functionality, evidence file uploads, and more. It includes both a **backend** (FastAPI) and a **frontend** (Angular 15+).
+This project is a **Full Stack Payment Management Application** that allows users to manage a list of payments via user interface with CRUD functionality, evidence file uploads, and more. It includes both a **backend** (FastAPI) and a **frontend** (Angular 18+).
 
 ---
 
@@ -51,7 +51,7 @@ This project is a **Full Stack Payment Management Application** that allows user
 1. Clone the repository:
    ```bash
    git clone https://github.com/relhe/billpilot.git
-   cd billpilot/backend
+   cd billpilot/back-end
    ```
 2. Create a virtual environment and activate it:
    ```bash
@@ -71,7 +71,7 @@ This project is a **Full Stack Payment Management Application** that allows user
 
 1. Navigate to the frontend directory:
    ```bash
-   cd ../frontend
+   cd ../front-end
    ```
 2. Install dependencies:
    ```bash

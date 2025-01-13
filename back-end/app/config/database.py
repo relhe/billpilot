@@ -27,6 +27,7 @@ def get_database():
                 "Connection string not found in environment variables")
 
         # Now connect to MongoDB using the connection string
+
         client = MongoClient(CONNECTION_STRING)
 
         # Return the "billpilot" database
