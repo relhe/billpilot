@@ -9,3 +9,4 @@ pandas
 python-multipart
 pycountry
 phonenumbers
+requests

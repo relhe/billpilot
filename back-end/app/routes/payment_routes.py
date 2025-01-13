@@ -5,10 +5,11 @@ import gridfs
 from starlette.responses import StreamingResponse
 
 from app.models.payment_model import Payment
-from app.schemas.payment_schema import serialize_payments
+from app.schemas.payment_schema import serialize_payments, serialize_payment
 from app.config.database import db, payments_collection, evidence_collection
 from bson import ObjectId
 
+from app.utils.utils import compute_total_due
 from app.constants.constants import ALLOWED_MIME_TYPES
 
 
@@ -23,10 +24,26 @@ async def get_payments():
     return payments
 
 
+@router.get("/{id}")
+async def get_payment(id: str):
+    payment = serialize_payment(
+        payments_collection.find_one({"_id": ObjectId(id)}))
+    if payment:
+        return payment
+    else:
+        raise HTTPException(status_code=404, detail="Payment not found")
+
+
 @router.post("/")
 async def create_payment(payment: Payment):
     # Convert the payment object to a dictionary
     payment_dict = payment.dict()
+
+    payment_dict["total_due"] = compute_total_due(
+        payment_dict["due_amount"],
+        payment_dict.get("discount_percent", 0.0),
+        payment_dict.get("tax_percent", 0.0),
+    )
 
     # Ensure payee_due_date is converted to datetime
     if isinstance(payment_dict["payee_due_date"], date):
@@ -51,6 +68,12 @@ async def create_payment(payment: Payment):
 async def update_payment(id: str, payment: Payment):
     # Convert the payment object to a dictionary
     payment_dict = payment.dict()
+
+    payment_dict["total_due"] = compute_total_due(
+        payment_dict["due_amount"],
+        payment_dict.get("discount_percent", 0.0),
+        payment_dict.get("tax_percent", 0.0),
+    )
 
     # Ensure payee_due_date is converted to datetime
     if isinstance(payment_dict["payee_due_date"], date):
@@ -78,9 +101,18 @@ async def update_payment(id: str, payment: Payment):
 async def delete_payment(id: str):
     result = payments_collection.delete_one({"_id": ObjectId(id)})
     if result.deleted_count == 1:
+        # Delete the evidence file
+        evidence_collection.delete_one({"payment_id": ObjectId(id)})
         return {"message": "Success"}
     else:
         raise HTTPException(status_code=404, detail="Error")
+
+
+@router.delete("/")
+async def delete_all_payments():
+    payments_collection.delete_many({})
+    evidence_collection.delete_many({})
+    return {"message": "All payments deleted"}
 
 
 @router.post("/upload/{id}")
