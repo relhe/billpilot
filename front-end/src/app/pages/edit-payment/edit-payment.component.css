@@ -1,0 +1,89 @@
+/* General container styles */
+.edit-payment-container {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    font-family: 'Arial', sans-serif;
+}
+
+/* Form title */
+.edit-payment-container h2 {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #333333;
+}
+
+/* Form group styling */
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #555555;
+}
+
+/* Input field styling */
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #dddddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    color: #333333;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+    outline: none;
+}
+
+/* File input */
+input[type='file'] {
+    border: none;
+    background-color: #f4f4f4;
+    cursor: pointer;
+}
+
+/* Button styling */
+button[type='submit'] {
+    display: block;
+    width: 100%;
+    padding: 12px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #ffffff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+button[type='submit']:hover {
+    background-color: #0056b3;
+    box-shadow: 0 4px 10px rgba(0, 91, 179, 0.3);
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .edit-payment-container {
+        padding: 15px;
+    }
+
+    button[type='submit'] {
+        font-size: 14px;
+    }
+}
