@@ -1,0 +1,47 @@
+<div class="payment-card">
+    <h3>
+        {{ data.payment.payee_first_name }} {{ data.payment.payee_last_name }}
+    </h3>
+    <p>
+        {{ data.payment.payee_address_line_1 }},
+        {{ data.payment.payee_address_line_2 || '' }}
+    </p>
+    <p>
+        {{ data.payment.payee_city }},
+        {{ data.payment.payee_province_or_state || '' }},
+        {{ data.payment.payee_postal_code }},
+        {{ data.payment.payee_country }}
+    </p>
+    <div></div>
+
+    <p>Payment was added on {{ data.payment.payee_added_date_utc }}</p>
+    <p><strong>Status:</strong> {{ data.payment.payee_payment_status }}</p>
+    <p>
+        <strong>Due Amount:</strong>
+        {{ data.payment.due_amount | currency : data.payment.currency }}
+    </p>
+    <p>
+        <strong>Total Due:</strong>
+        {{ data.payment.total_due | currency : data.payment.currency }}
+    </p>
+    <p><strong>Due Date:</strong> {{ data.payment.payee_due_date | date }}</p>
+    <p><strong>Phone:</strong> {{ data.payment.payee_phone_number }}</p>
+    <p><strong>Email:</strong> {{ data.payment.payee_email }}</p>
+    <div>
+        <button
+            mat-button
+            color="warn"
+            (click)="deletePayment(data.payment.id)"
+        >
+            Delete
+        </button>
+        <button
+            mat-button
+            color="primary"
+            (click)="editPayment(data.payment.id)"
+        >
+            Edit
+        </button>
+        <button mat-button color="accent" (click)="Cancel()">Close</button>
+    </div>
+</div>

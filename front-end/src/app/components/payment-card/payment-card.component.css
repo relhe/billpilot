@@ -1,0 +1,82 @@
+/* Center the card on the page */
+.payment-card {
+    max-width: 400px;
+    margin: 50px auto; /* Centers the card horizontally and adds vertical spacing */
+    padding: 20px;
+    border-radius: 8px; /* Smooth rounded corners */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    background-color: #f9f9f9; /* Light background for contrast */
+    text-align: center; /* Center align text inside the card */
+}
+
+/* Style the title */
+.payment-card h3 {
+    margin-bottom: 16px;
+    font-size: 1.8em;
+    color: #333; /* Darker text for title */
+}
+
+/* Style the paragraphs */
+.payment-card p {
+    margin: 8px 0;
+    font-size: 1em;
+    color: #555; /* Medium-dark text for details */
+}
+
+/* Style the button container */
+.payment-card div {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 12px; /* Spacing between buttons */
+}
+
+/* Style buttons */
+button {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 4px;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: background-color 0.3s ease-in-out, transform 0.2s ease;
+}
+
+/* Delete Button */
+button:nth-child(1) {
+    background-color: #e74c3c; /* Red */
+    color: white;
+}
+
+button:nth-child(1):hover {
+    background-color: #c0392b; /* Darker red */
+    transform: scale(1.05);
+}
+
+/* Edit Button */
+button:nth-child(2) {
+    background-color: #3498db; /* Blue */
+    color: white;
+}
+
+button:nth-child(2):hover {
+    background-color: #2980b9; /* Darker blue */
+    transform: scale(1.05);
+}
+
+/* Cancel Button */
+button:nth-child(3) {
+    background-color: #95a5a6; /* Gray */
+    color: white;
+}
+
+button:nth-child(3):hover {
+    background-color: #7f8c8d; /* Darker gray */
+    transform: scale(1.05);
+}
+
+/* Add spacing between each button */
+button + button {
+    margin-left: 10px;
+}
