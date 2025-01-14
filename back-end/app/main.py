@@ -6,7 +6,7 @@ app = FastAPI()
 
 # CORS settings
 origins = [
-    "http://localhost:4200", 'www.scholarnethub.com', 'scholarnethub.com'
+    "http://localhost:4200"
 ]
 
 app.add_middleware(
