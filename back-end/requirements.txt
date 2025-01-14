@@ -1,6 +1,7 @@
 pydantic
 pydantic[email]
 fastapi
+fastapi-cors
 uvicorn
 typing
 pymongo[srv]
