@@ -18,13 +18,13 @@ router = APIRouter()
 fs = gridfs.GridFS(db)
 
 
-@router.get("/")
+@router.get("/payments")
 async def get_payments():
     payments = serialize_payments(payments_collection.find())
     return payments
 
 
-@router.get("/{id}")
+@router.get("/payments/{id}")
 async def get_payment(id: str):
     payment = serialize_payment(
         payments_collection.find_one({"_id": ObjectId(id)}))
@@ -34,7 +34,7 @@ async def get_payment(id: str):
         raise HTTPException(status_code=404, detail="Payment not found")
 
 
-@router.post("/")
+@router.post("/payments")
 async def create_payment(payment: Payment):
     # Convert the payment object to a dictionary
     payment_dict = payment.dict()
@@ -64,7 +64,7 @@ async def create_payment(payment: Payment):
         )
 
 
-@router.put("/{id}")
+@router.put("/payments/{id}")
 async def update_payment(id: str, payment: Payment):
     # Convert the payment object to a dictionary
     payment_dict = payment.dict()
@@ -97,7 +97,7 @@ async def update_payment(id: str, payment: Payment):
         )
 
 
-@router.delete("/{id}")
+@router.delete("/payments/{id}")
 async def delete_payment(id: str):
     result = payments_collection.delete_one({"_id": ObjectId(id)})
     if result.deleted_count == 1:
@@ -108,7 +108,7 @@ async def delete_payment(id: str):
         raise HTTPException(status_code=404, detail="Error")
 
 
-@router.delete("/")
+@router.delete("/payments")
 async def delete_all_payments():
     payments_collection.delete_many({})
     evidence_collection.delete_many({})
@@ -161,7 +161,7 @@ async def upload_evidence(id: str, file: UploadFile = File(...)):
             status_code=500, detail=f"Error: {str(e)}")
 
 
-@router.get("/download/{evidence_id}")
+@router.get("/payments/download/{evidence_id}")
 async def download_evidence(evidence_id: str):
     if not ObjectId.is_valid(evidence_id):
         raise HTTPException(
