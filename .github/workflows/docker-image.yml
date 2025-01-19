@@ -20,9 +20,9 @@ jobs:
                   DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
               run: echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
 
-            # Build the Docker image (specify backend folder as context)
+            # Build the Docker image
             - name: Build Docker image
-              run: docker build -t trimax10/billpilot-backend:latest ./back-end
+              run: docker build -t trimax10/billpilot-backend:latest -f ./back-end/Dockerfile ./back-end
 
             # Push the Docker image to Docker Hub
             - name: Push Docker image
