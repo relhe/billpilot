@@ -9,18 +9,18 @@ ENV PYTHONUNBUFFERED 1
 WORKDIR /app
 
 # Copy requirements file and install dependencies
-COPY requirements.txt ./
+COPY back-end/requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
 # If using Poetry instead of requirements.txt:
-# COPY pyproject.toml poetry.lock ./
+# COPY backend/pyproject.toml backend/poetry.lock ./
 # RUN pip install poetry && poetry install --no-root
 
 # Copy the FastAPI application code to the container
-COPY . /app
+COPY back-end /app
 
 # Expose the port FastAPI runs on (default is 8000)
 EXPOSE 8000
 
 # Command to run the FastAPI app using uvicorn
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
