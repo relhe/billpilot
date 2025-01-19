@@ -18,6 +18,11 @@ router = APIRouter()
 fs = gridfs.GridFS(db)
 
 
+@router.get("/")
+async def root():
+    return {"message": "Welcome to the payment service"}
+
+
 @router.get("/payments")
 async def get_payments():
     payments = serialize_payments(payments_collection.find())
