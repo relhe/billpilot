@@ -4,9 +4,9 @@ fastapi
 fastapi-cors
 fastapi[all]
 uvicorn
-typing
 pymongo[srv]
 python-dotenv
+pyyaml
 pandas
 python-multipart
 pycountry
