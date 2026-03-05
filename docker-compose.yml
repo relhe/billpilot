@@ -18,7 +18,7 @@ services:
   backend:
     build:
       context: ./back-end
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     container_name: billpilot-backend
     restart: unless-stopped
     ports:
@@ -26,6 +26,8 @@ services:
     environment:
       MONGO_CONNECTION_STRING: >-
         mongodb://${MONGO_ROOT_USER:-admin}:${MONGO_ROOT_PASSWORD:-changeme}@mongodb:27017/billpilot?authSource=admin
+    volumes:
+      - ./back-end:/app
     depends_on:
       - mongodb
     networks:
@@ -34,11 +36,14 @@ services:
   frontend:
     build:
       context: ./front-end
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     container_name: billpilot-frontend
     restart: unless-stopped
     ports:
-      - "4200:80"
+      - "4200:4200"
+    volumes:
+      - ./front-end:/app
+      - /app/node_modules
     depends_on:
       - backend
     networks:
