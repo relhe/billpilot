@@ -1,9 +1,10 @@
 pydantic
 pydantic[email]
+pydantic-settings
 fastapi
-fastapi-cors
 fastapi[all]
 uvicorn
+motor
 pymongo[srv]
 python-dotenv
 pyyaml
@@ -12,3 +13,13 @@ python-multipart
 pycountry
 phonenumbers
 requests
+python-jose[cryptography]
+passlib[bcrypt]
+boto3
+slowapi
+structlog
+httpx
+pytest
+pytest-asyncio
+mongomock-motor
+moto[s3]

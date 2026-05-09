@@ -19,10 +19,22 @@ database:
   name: "billpilot"
   collections:
     payments: "payments"
-    evidence: "evidence"
+    users: "users"
+    audit_log: "audit_log"
 
 storage:
   allowed_mime_types:
     - "application/pdf"
     - "image/png"
     - "image/jpeg"
+
+jwt:
+  algorithm: "HS256"
+  access_token_expire_minutes: 15
+  refresh_token_expire_days: 7
+
+s3:
+  evidence_prefix: "evidence"
+
+logging:
+  level: "info"
