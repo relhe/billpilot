@@ -4,7 +4,7 @@ import math
 from datetime import date, datetime
 from typing import Generic, List, Optional, TypeVar
 
-from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, computed_field, field_validator
 
 from app.models.payment import PaymentStatus
 
@@ -72,6 +72,7 @@ class PaginatedResponse(BaseModel, Generic[T]):
     page: int
     page_size: int
 
+    @computed_field
     @property
     def total_pages(self) -> int:
         return math.ceil(self.total / self.page_size) if self.page_size > 0 else 0

@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
 
 from app.config.database import get_db
@@ -14,13 +14,12 @@ async def liveness():
 
 
 @router.get("/ready")
-async def readiness():
+async def readiness(db=Depends(get_db)):
     detail = {}
     settings = get_settings()
 
     # Check MongoDB
     try:
-        db = get_db()
         if db is None:
             raise RuntimeError("DB not initialized")
         await db.command("ping")

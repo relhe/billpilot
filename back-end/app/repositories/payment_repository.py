@@ -49,7 +49,7 @@ class PaymentRepository(BaseRepository):
         oid = self.to_object_id(id_str)
         if oid is None:
             return None
-        await self._col.update_one({"_id": oid}, {"$set": fields})
+        await self._col.update_one({"_id": oid}, {"$set": _serialize_doc(fields)})
         return await self._col.find_one({"_id": oid})
 
     async def delete(self, id_str: str) -> bool:
