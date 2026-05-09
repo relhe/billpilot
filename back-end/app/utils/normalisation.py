@@ -1,100 +1,63 @@
 import csv
-from datetime import datetime, date
-from typing import Optional, List, Literal
-from pydantic import BaseModel, Field
 import requests
-import json
+from datetime import datetime
+from typing import List
+
+from app.schemas.payment_schemas import PaymentCreate
 
 
-class Payment(BaseModel):
-    payee_first_name: str
-    payee_last_name: str
-    payee_payment_status: Literal["completed", "due_now", "overdue", "pending"]
-    payee_added_date_utc: str
-    payee_due_date: date
-    payee_address_line_1: str
-    payee_address_line_2: Optional[str]
-    payee_city: str
-    payee_country: str
-    payee_province_or_state: Optional[str]
-    payee_postal_code: str
-    payee_phone_number: str
-    payee_email: str
-    currency: str
-    discount_percent: Optional[float] = Field(default=0.00, ge=0.00, le=100.00)
-    tax_percent: Optional[float] = Field(default=0.00, ge=0.00, le=100.00)
-    due_amount: float
-    total_due: Optional[float] = Field(default=0.00)
-
-
-def parse_csv_to_payments(file_path: str) -> List[Payment]:
+def parse_csv_to_payments(file_path: str) -> List[dict]:
     payments = []
-
-    with open(file_path, mode='r', encoding='utf-8') as csvfile:
-        reader = csv.DictReader(csvfile)
-
+    with open(file_path, mode="r", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
         for row in reader:
             try:
-                # Convert payee_added_date_utc to the desired format
-                timestamp_utc = int(row['payee_added_date_utc'])
-                payee_added_date_utc = datetime.utcfromtimestamp(timestamp_utc)
-                formatted_added_date = payee_added_date_utc.strftime(
-                    "%b %d, %Y, %I:%M %p")
+                phone = row["payee_phone_number"]
+                if not phone.startswith("+"):
+                    phone = "+" + phone
 
-                # Validate and adjust phone number to E.164 format
-                phone_number = row['payee_phone_number']
-                if not phone_number.startswith("+"):
-                    phone_number = "+" + phone_number
-
-                # Create a Payment object
-                payment = Payment(
-                    payee_first_name=row['payee_first_name'],
-                    payee_last_name=row['payee_last_name'],
-                    payee_payment_status=row['payee_payment_status'],
-                    payee_added_date_utc=formatted_added_date,
-                    payee_due_date=datetime.strptime(
-                        row['payee_due_date'], "%Y-%m-%d").date(),
-                    payee_address_line_1=row['payee_address_line_1'],
-                    payee_address_line_2=row.get('payee_address_line_2', None),
-                    payee_city=row['payee_city'],
-                    payee_country=row['payee_country'],
-                    payee_province_or_state=row.get(
-                        'payee_province_or_state', None),
-                    payee_postal_code=row['payee_postal_code'],
-                    payee_phone_number=phone_number,
-                    payee_email=row['payee_email'],
-                    currency=row['currency'],
-                    discount_percent=float(row.get('discount_percent', 0.00)),
-                    tax_percent=float(row.get('tax_percent', 0.00)),
-                    due_amount=float(row['due_amount']),
-                    total_due=float(row.get('total_due', 0.00))
+                payment = PaymentCreate(
+                    payee_first_name=row["payee_first_name"],
+                    payee_last_name=row["payee_last_name"],
+                    payee_email=row["payee_email"],
+                    payee_phone_number=phone,
+                    payee_due_date=datetime.strptime(row["payee_due_date"], "%Y-%m-%d").date(),
+                    payee_address_line_1=row["payee_address_line_1"],
+                    payee_address_line_2=row.get("payee_address_line_2"),
+                    payee_city=row["payee_city"],
+                    payee_country=row["payee_country"],
+                    payee_province_or_state=row.get("payee_province_or_state"),
+                    payee_postal_code=row["payee_postal_code"],
+                    currency=row["currency"],
+                    discount_percent=float(row.get("discount_percent", 0.0)),
+                    tax_percent=float(row.get("tax_percent", 0.0)),
+                    due_amount=float(row["due_amount"]),
                 )
-
-                payments.append(payment)
-
+                p = payment.model_dump()
+                p["payee_due_date"] = str(p["payee_due_date"])
+                payments.append(p)
             except Exception as e:
-                print(f"Error processing row {row}: {e}")
-
+                print(f"Skipping row {row}: {e}")
     return payments
 
 
-def post_payments_to_api(payments: List[Payment], api_url: str):
+def post_payments_to_api(payments: List[dict], api_url: str, token: str) -> None:
+    headers = {"Authorization": f"Bearer {token}"}
     for payment in payments:
         try:
-            # Serialize Payment object, converting date fields to ISO format
-            payment_data = payment.dict()
-            payment_data["payee_due_date"] = payment.payee_due_date.isoformat()
-
-            requests.post(api_url, json=payment_data)
+            requests.post(api_url, json=payment, headers=headers)
         except Exception as e:
-            print(
-                f"Error sending payment {payment.payee_first_name} {payment.payee_last_name}: {e}")
+            print(f"Error sending payment: {e}")
 
 
-# Example usage
 if __name__ == "__main__":
+    import sys
     file_path = "payment_information.csv"
-    # Update this to match your API endpoint
-    api_url = "http://127.0.0.1:8000/payments/"
+    api_url = "http://127.0.0.1:8000/api/v1/payments"
+    token = sys.argv[1] if len(sys.argv) > 1 else ""
+    if not token:
+        print("Usage: python -m app.utils.normalisation <bearer_token>")
+        sys.exit(1)
     payments = parse_csv_to_payments(file_path)
-    post_payments_to_api(payments, api_url)
+    post_payments_to_api(payments, api_url, token)
+    print(f"Sent {len(payments)} payments.")
